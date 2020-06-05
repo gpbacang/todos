@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="py-0 px-5">
-      <v-checkbox v-model="task.isDone">
+      <v-checkbox v-model="task.isDone" @change="setDone(task)">
         <template v-slot:label>
           <div class="pl-3">
             <div>{{ task.title }}</div>
@@ -36,6 +36,14 @@ export default {
       default() {
         return {};
       },
+    },
+  },
+
+  methods: {
+    setDone(task) {
+      this.$store.dispatch('updateTask', task).then((res) => {
+        this.$store.dispatch('fetchTasks');
+      });
     },
   },
 };

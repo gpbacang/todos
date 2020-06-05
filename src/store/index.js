@@ -2,80 +2,106 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import lodash from 'lodash';
 import moment from 'moment';
+import axios from 'axios';
+
+axios.defaults.baseURL =
+  'https://api.fake.rest/788438df-ac8a-4f54-b27e-2770036764e5';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    tasks: [
-      {
-        id: '1',
-        title: 'Grocery',
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
-        isDone: true,
-        date: '2020-06-05',
-      },
-      {
-        id: '2',
-        title: 'Pay the bills',
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
-        isDone: false,
-        date: '2020-06-05',
-      },
-      {
-        id: '2',
-        title: 'Laundry',
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
-        isDone: false,
-        date: '2020-06-06',
-      },
-    ],
+    tasks: [],
     date: moment().format('YYYY-MM-DD'),
     dateToday: moment().format('YYYY-MM-DD'),
   },
 
   getters: {
     activeTasksCount(state) {
-      return state.tasks.filter(
-        (task) => !task.isDone && task.date == state.dateToday
-      ).length;
+      return state.tasks.filter((task) => !task.isDone).length;
     },
 
     doneTasksCount(state) {
-      return state.tasks.filter(
-        (task) => task.isDone && task.date == state.dateToday
-      ).length;
-    },
-
-    getTasks(state) {
-      return state.tasks.filter((task) => task.date == state.date);
+      return state.tasks.filter((task) => task.isDone).length;
     },
   },
 
   mutations: {
+    setTasks(state, tasks) {
+      state.tasks = tasks;
+    },
+
     setDate(state, date) {
       state.date = date;
     },
-
-    newTask(state, task) {
-      Vue.set(state.tasks, state.tasks.length, task);
-    },
-
-    editTask(state, task) {
-      let taskIndex = state.tasks.findIndex((t) => t.id == task.id);
-      if (taskIndex != -1) Vue.set(state.tasks, taskIndex, task);
-    },
-
-    deleteTask(state, task) {
-      let taskIndex = state.tasks.findIndex((t) => t.id == task.id);
-      if (taskIndex != -1) state.tasks.splice(taskIndex, 1);
-    },
   },
 
-  actions: {},
+  actions: {
+    fetchTasks({ commit, state }) {
+      axios
+        .get(`task/list?date=${state.date}`)
+        .then((res) => {
+          commit('setTasks', res.data.data.data);
+        })
+        .catch((err) => {
+          throw err;
+        });
+    },
+
+    addTask({ commit }, task) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'post',
+          url: `task/add`,
+          headers: { 'content-type': 'application/json' },
+          data: task,
+        })
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => {
+            throw err;
+            reject(err);
+          });
+      });
+    },
+
+    updateTask({ commit }, task) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'post',
+          url: `task/update?id=${task.id}`,
+          headers: { 'content-type': 'application/json' },
+          data: task,
+        })
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => {
+            throw err;
+            reject(err);
+          });
+      });
+    },
+
+    deleteTask({ commit }, task) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'post',
+          url: `task/delete?id=${task.id}`,
+          headers: { 'content-type': 'application/json' },
+          data: task,
+        })
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => {
+            throw err;
+            reject(err);
+          });
+      });
+    },
+  },
 
   modules: {},
 });

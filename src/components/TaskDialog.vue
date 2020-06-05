@@ -111,15 +111,23 @@ export default {
   methods: {
     saveTask() {
       if (this.$refs.form.validate()) {
-        let task = _.cloneDeep(this.model);
-        if (this.action == 'add') {
-          this.model.id = Math.floor(Math.random() * 90000) + 10000;
-          this.$store.commit('newTask', task);
-        } else {
-          this.$store.commit('editTask', task);
-        }
-        this.closeDialog();
+        if (this.action === 'add') this.addTask();
+        else this.updateTask();
       }
+    },
+
+    addTask() {
+      this.$store.dispatch('addTask', this.model).then((res) => {
+        this.$store.dispatch('fetchTasks');
+        this.closeDialog();
+      });
+    },
+
+    updateTask() {
+      this.$store.dispatch('updateTask', this.model).then((res) => {
+        this.$store.dispatch('fetchTasks');
+        this.closeDialog();
+      });
     },
 
     closeDialog() {

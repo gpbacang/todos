@@ -60,17 +60,7 @@
       class="black--text"
     >
       Are you sure you want to delete this task?
-      <v-btn
-        small
-        text
-        color="primary"
-        @click="
-          $store.commit('deleteTask', selectedTask);
-          deleteSnackbar = false;
-          selectedTask = {};
-        "
-        >Yes</v-btn
-      >
+      <v-btn small text color="primary" @click="deleteTask()">Yes</v-btn>
       <v-btn
         small
         text
@@ -109,11 +99,19 @@ export default {
     },
 
     tasks() {
-      return this.$store.getters['getTasks'];
+      return this.$store.state.tasks;
     },
   },
 
+  mounted() {
+    this.fetchTasks();
+  },
+
   methods: {
+    fetchTasks() {
+      this.$store.dispatch('fetchTasks');
+    },
+
     onEditTask(task) {
       this.selectedTask = task;
       this.taskDialog = true;
@@ -123,6 +121,14 @@ export default {
     onDeleteTask(task) {
       this.selectedTask = task;
       this.deleteSnackbar = true;
+    },
+
+    deleteTask() {
+      this.deleteSnackbar = false;
+      this.$store.dispatch('deleteTask', this.selectedTask).then((res) => {
+        this.selectedTask = {};
+        this.$store.dispatch('fetchTasks');
+      });
     },
   },
 };

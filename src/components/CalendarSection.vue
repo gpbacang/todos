@@ -12,12 +12,7 @@
         </div>
       </v-card-text>
     </v-card>
-    <v-date-picker
-      v-model="date"
-      width="100%"
-      color="primary"
-      @change="$store.dispatch('fetchTaskList', date)"
-    ></v-date-picker>
+    <v-date-picker v-model="date" width="100%" color="primary"></v-date-picker>
   </div>
 </template>
 <script>
@@ -47,6 +42,7 @@ export default {
       immediate: true,
       handler() {
         this.$store.commit('setDate', this.date);
+        this.$store.dispatch('fetchTasks');
       },
     },
   },
