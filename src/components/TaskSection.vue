@@ -18,7 +18,13 @@
       </v-btn>
     </div>
     <v-expansion-panels v-model="panel" class="mt-5" multiple>
-      <Task @edit="taskDialog = true" @delete="deleteSnackbar = true" />
+      <Task
+        v-for="task in tasks"
+        :key="task.id"
+        :task="task"
+        @edit="taskDialog = true"
+        @delete="deleteSnackbar = true"
+      />
     </v-expansion-panels>
 
     <!-- Task Dialog -->
@@ -52,11 +58,28 @@ export default {
     Task,
     TaskDialog,
   },
+
   data: () => ({
-    panel: [0],
+    panel: [],
     taskDialog: false,
     deleteSnackbar: false,
   }),
+
+  computed: {
+    tasks() {
+      return this.$store.state.tasks;
+    },
+  },
+
+  mounted() {
+    this.fetchTaskList();
+  },
+
+  methods: {
+    fetchTaskList() {
+      this.$store.dispatch('fetchTaskList');
+    },
+  },
 };
 </script>
 <style lang="scss">

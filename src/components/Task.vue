@@ -1,26 +1,21 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="py-0 px-5">
-      <v-checkbox v-model="completed" @click.stop>
+      <v-checkbox v-model="task.isDone" @click.stop>
         <template v-slot:label>
           <div class="pl-3">
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+            <div>{{ task.title }}</div>
           </div>
         </template>
       </v-checkbox>
     </v-expansion-panel-header>
     <v-divider></v-divider>
     <v-expansion-panel-content>
-      <v-card flat color="#E0F2F1">
-        <v-card-text
-          >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et
-          gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et,
-          posuere mollis leo.</v-card-text
-        >
+      <v-card flat color="grey lighten-4">
+        <v-card-text>{{ task.description }}</v-card-text>
         <v-divider></v-divider>
         <v-card-actions style="background-color:white;">
-          <v-chip small class="mr-1">09:30</v-chip>
-          <v-chip small>06.05.2020</v-chip>
+          <v-chip small>{{ task.date }}</v-chip>
           <v-spacer></v-spacer>
           <v-btn icon small color="primary" @click="$emit('edit')">
             <v-icon>edit</v-icon>
@@ -35,6 +30,14 @@
 </template>
 <script>
 export default {
+  props: {
+    task: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+  },
   data: () => ({
     completed: false,
   }),

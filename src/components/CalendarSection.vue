@@ -10,7 +10,11 @@
         </div>
       </v-card-text>
     </v-card>
-    <v-date-picker v-model="picker" width="100%"></v-date-picker>
+    <v-date-picker
+      v-model="picker"
+      width="100%"
+      color="primary"
+    ></v-date-picker>
   </div>
 </template>
 <script>
