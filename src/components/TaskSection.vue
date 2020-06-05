@@ -2,33 +2,52 @@
   <div>
     <div class="mb-2">Tasks</div>
     <v-divider></v-divider>
-    <div class="d-flex mt-5">
-      <v-text-field
-        solo
-        placeholder="Search for tasks"
-        append-icon="search"
-        class="mr-3"
-        hide-details
-        flat
-        dense
-      ></v-text-field>
-      <v-btn color="primary" depressed @click="taskDialog = true">
-        <v-icon left>add</v-icon>
-        New task
-      </v-btn>
-    </div>
-    <v-expansion-panels v-model="panel" class="mt-5" multiple>
+    <v-expansion-panels
+      v-model="panel"
+      class="mt-5"
+      multiple
+      v-if="tasks.length > 0"
+    >
       <Task
         v-for="task in tasks"
         :key="task.id"
         :task="task"
-        @edit="taskDialog = true"
-        @delete="deleteSnackbar = true"
+        @edit="onEditTask(task)"
+        @delete="onDeleteTask(task)"
       />
     </v-expansion-panels>
+    <div v-else class="text-center pa-5">
+      You don't have any tasks for this day.
+    </div>
 
-    <!-- Task Dialog -->
-    <TaskDialog :taskDialog="taskDialog" @taskDialog="taskDialog = $event" />
+    <!-- Add Task Button -->
+    <v-btn
+      absolute
+      dark
+      fab
+      bottom
+      right
+      fixed
+      color="primary"
+      style="bottom:20px;"
+      @click="
+        taskDialog = true;
+        action = 'add';
+      "
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+
+    <!-- Add/Edit Task Dialog -->
+    <TaskDialog
+      :taskDialog="taskDialog"
+      :action="action"
+      :task="selectedTask"
+      @taskDialog="
+        taskDialog = $event;
+        selectedTask = {};
+      "
+    />
 
     <!-- Delete Task -->
     <v-snackbar
@@ -41,8 +60,25 @@
       class="black--text"
     >
       Are you sure you want to delete this task?
-      <v-btn small text color="primary">Yes</v-btn>
-      <v-btn small text color="primary" @click="deleteSnackbar = false"
+      <v-btn
+        small
+        text
+        color="primary"
+        @click="
+          $store.commit('deleteTask', selectedTask);
+          deleteSnackbar = false;
+          selectedTask = {};
+        "
+        >Yes</v-btn
+      >
+      <v-btn
+        small
+        text
+        color="primary"
+        @click="
+          deleteSnackbar = false;
+          selectedTask = {};
+        "
         >No</v-btn
       >
     </v-snackbar>
@@ -63,21 +99,30 @@ export default {
     panel: [],
     taskDialog: false,
     deleteSnackbar: false,
+    action: 'Add',
+    selectedTask: {},
   }),
 
   computed: {
+    date() {
+      return this.$store.state.date;
+    },
+
     tasks() {
-      return this.$store.state.tasks;
+      return this.$store.getters['getTasks'];
     },
   },
 
-  mounted() {
-    this.fetchTaskList();
-  },
-
   methods: {
-    fetchTaskList() {
-      this.$store.dispatch('fetchTaskList');
+    onEditTask(task) {
+      this.selectedTask = task;
+      this.taskDialog = true;
+      this.action = 'edit';
+    },
+
+    onDeleteTask(task) {
+      this.selectedTask = task;
+      this.deleteSnackbar = true;
     },
   },
 };

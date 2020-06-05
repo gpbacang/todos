@@ -1,46 +1,85 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import axios from 'axios';
-
-axios.defaults.baseURL =
-  'https://api.fake.rest/788438df-ac8a-4f54-b27e-2770036764e5';
+import lodash from 'lodash';
+import moment from 'moment';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    tasks: [],
+    tasks: [
+      {
+        id: '1',
+        title: 'Grocery',
+        description:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
+        isDone: true,
+        date: '2020-06-05',
+      },
+      {
+        id: '2',
+        title: 'Pay the bills',
+        description:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
+        isDone: false,
+        date: '2020-06-05',
+      },
+      {
+        id: '2',
+        title: 'Laundry',
+        description:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et gravida tellus, rhoncus iaculis mi. In leo purus, mollis nec velit et, posuere mollis leo.',
+        isDone: false,
+        date: '2020-06-06',
+      },
+    ],
+    date: moment().format('YYYY-MM-DD'),
+    dateToday: moment().format('YYYY-MM-DD'),
   },
 
   getters: {
-    getActiveTasks(state) {
-      return state.tasks.filter((task) => !task.isDone).length;
+    activeTasksCount(state) {
+      return state.tasks.filter(
+        (task) => !task.isDone && task.date == state.dateToday
+      ).length;
     },
 
-    getCompletedTasks(state) {
-      return state.tasks.filter((task) => task.isDone).length;
+    doneTasksCount(state) {
+      return state.tasks.filter(
+        (task) => task.isDone && task.date == state.dateToday
+      ).length;
+    },
+
+    getTasks(state) {
+      return state.tasks.filter((task) => task.date == state.date);
     },
   },
 
   mutations: {
     setTasks(state, tasks) {
-      let taskList = tasks.map(task => )
       state.tasks = tasks;
+    },
+
+    setDate(state, date) {
+      state.date = date;
+    },
+
+    newTask(state, task) {
+      Vue.set(state.tasks, state.tasks.length, task);
+    },
+
+    editTask(state, task) {
+      let taskIndex = state.tasks.findIndex((t) => t.id == task.id);
+      if (taskIndex != -1) Vue.set(state.tasks, taskIndex, task);
+    },
+
+    deleteTask(state, task) {
+      let taskIndex = state.tasks.findIndex((t) => t.id == task.id);
+      if (taskIndex != -1) state.tasks.splice(taskIndex, 1);
     },
   },
 
-  actions: {
-    fetchTaskList({ commit }) {
-      axios
-        .get(`task/list`)
-        .then((res) => {
-          commit('setTasks', res.data.data);
-        })
-        .catch((err) => {
-          throw err;
-        });
-    },
-  },
+  actions: {},
 
   modules: {},
 });

@@ -5,33 +5,49 @@
         <div class="body-2 font-weight-medium mb-3">Hi, Geraldine!</div>
         <div class="caption">
           You have
-          <span class="accent--text">{{ `${activeTasks} tasks` }}</span> left
-          for today. You have already completed
-          <span class="primary--text">{{ `${completedTasks} tasks` }}</span>
+          <span class="accent--text">{{ `${activeTasksCount} tasks` }}</span>
+          left for today. You have already completed
+          <span class="primary--text">{{ `${doneTasksCount} tasks` }}</span>
           today.
         </div>
       </v-card-text>
     </v-card>
     <v-date-picker
-      v-model="picker"
+      v-model="date"
       width="100%"
       color="primary"
+      @change="$store.dispatch('fetchTaskList', date)"
     ></v-date-picker>
   </div>
 </template>
 <script>
+import moment from 'moment';
 export default {
   data: () => ({
-    picker: null,
+    date: null,
   }),
 
+  created() {
+    this.date = moment().format('YYYY-MM-DD');
+    this.$store.commit('setDate', this.date);
+  },
+
   computed: {
-    activeTasks() {
-      return this.$store.getters['getActiveTasks'];
+    activeTasksCount() {
+      return this.$store.getters['activeTasksCount'];
     },
 
-    completedTasks() {
-      return this.$store.getters['getCompletedTasks'];
+    doneTasksCount() {
+      return this.$store.getters['doneTasksCount'];
+    },
+  },
+
+  watch: {
+    date: {
+      immediate: true,
+      handler() {
+        this.$store.commit('setDate', this.date);
+      },
     },
   },
 };

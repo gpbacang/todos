@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="py-0 px-5">
-      <v-checkbox v-model="task.isDone" @click.stop>
+      <v-checkbox v-model="task.isDone">
         <template v-slot:label>
           <div class="pl-3">
             <div>{{ task.title }}</div>
@@ -38,9 +38,6 @@ export default {
       },
     },
   },
-  data: () => ({
-    completed: false,
-  }),
 };
 </script>
 <style lang="scss">

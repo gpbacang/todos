@@ -3,54 +3,62 @@
     <v-card>
       <v-card-title>Task</v-card-title>
       <v-card-text>
-        <v-text-field outlined label="Title" dense></v-text-field>
-        <v-textarea outlined label="Description" dense></v-textarea>
-        <v-layout wrap>
-          <v-flex class="pr-2">
-            <v-menu
-              ref="menu"
-              v-model="menu"
-              :close-on-content-click="false"
-              :return-value.sync="date"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
+        <!-- Task Form -->
+        <v-form ref="form">
+          <v-text-field
+            outlined
+            label="Title"
+            dense
+            v-model="model.title"
+            required
+            :rules="rules"
+          ></v-text-field>
+          <v-textarea
+            outlined
+            label="Description"
+            dense
+            v-model="model.description"
+          ></v-textarea>
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="model.date"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="model.date"
+                label="Date"
+                readonly
+                outlined
+                dense
+                required
+                :rules="rules"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="model.date"
+              color="primary"
+              no-title
+              scrollable
             >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  v-model="date"
-                  label="Date"
-                  readonly
-                  outlined
-                  dense
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker v-model="date" no-title scrollable>
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(date)"
-                  >OK</v-btn
-                >
-              </v-date-picker>
-            </v-menu>
-          </v-flex>
-          <v-flex>
-            <v-text-field
-              outlined
-              dense
-              label="Time"
-              placeholder="00:00"
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.menu.save(model.date)"
+                >OK</v-btn
+              >
+            </v-date-picker>
+          </v-menu>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn text color="grey darken-2" @click="$emit('taskDialog', false)"
-          >Cancel</v-btn
-        >
-        <v-btn depressed color="primary">Save</v-btn>
+        <v-btn text color="grey darken-2" @click="closeDialog">Cancel</v-btn>
+        <v-btn depressed color="primary" @click="saveTask">Save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -58,14 +66,66 @@
 <script>
 export default {
   props: {
+    task: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+
     taskDialog: {
       type: Boolean,
       default: false,
     },
+
+    action: {
+      type: String,
+      default: null,
+    },
   },
+
   data: () => ({
     menu: false,
-    date: null,
+    model: {
+      id: null,
+      title: null,
+      description: null,
+      date: null,
+    },
+    rules: [(v) => !!v || 'Required'],
   }),
+
+  watch: {
+    task: {
+      handler() {
+        this.model = {
+          id: this.task.id,
+          title: this.task.title,
+          description: this.task.description,
+          date: this.task.date,
+        };
+      },
+    },
+  },
+
+  methods: {
+    saveTask() {
+      if (this.$refs.form.validate()) {
+        let task = _.cloneDeep(this.model);
+        if (this.action == 'add') {
+          this.model.id = Math.floor(Math.random() * 90000) + 10000;
+          this.$store.commit('newTask', task);
+        } else {
+          this.$store.commit('editTask', task);
+        }
+        this.closeDialog();
+      }
+    },
+
+    closeDialog() {
+      this.$refs.form.reset();
+      this.$emit('taskDialog', false);
+    },
+  },
 };
 </script>
