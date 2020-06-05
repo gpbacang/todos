@@ -1,18 +1,25 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="home pa-5">
+    <v-layout wrap>
+      <v-flex md3 class="pa-5">
+        <CalendarSection />
+      </v-flex>
+      <v-flex md9 class="pa-5">
+        <TaskSection />
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import CalendarSection from '@/components/CalendarSection';
+import TaskSection from '@/components/TaskSection';
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld
-  }
-}
+    CalendarSection,
+    TaskSection,
+  },
+};
 </script>
