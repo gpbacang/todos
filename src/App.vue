@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <v-app-bar app light dense elevation="1" color="white">
-      <div class="primary--text">Task Manager</div>
+      <div class="primary--text">To Dos</div>
       <v-spacer></v-spacer>
       <div>
         <v-avatar size="25" class="mr-2 teal lighten-1">
