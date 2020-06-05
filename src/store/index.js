@@ -12,8 +12,19 @@ export default new Vuex.Store({
     tasks: [],
   },
 
+  getters: {
+    getActiveTasks(state) {
+      return state.tasks.filter((task) => !task.isDone).length;
+    },
+
+    getCompletedTasks(state) {
+      return state.tasks.filter((task) => task.isDone).length;
+    },
+  },
+
   mutations: {
     setTasks(state, tasks) {
+      let taskList = tasks.map(task => )
       state.tasks = tasks;
     },
   },
