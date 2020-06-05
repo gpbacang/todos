@@ -13,7 +13,6 @@ export default new Vuex.Store({
   state: {
     tasks: [],
     date: moment().format('YYYY-MM-DD'),
-    dateToday: moment().format('YYYY-MM-DD'),
   },
 
   getters: {
