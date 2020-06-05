@@ -56,10 +56,6 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    setTasks(state, tasks) {
-      state.tasks = tasks;
-    },
-
     setDate(state, date) {
       state.date = date;
     },
