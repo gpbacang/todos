@@ -5,7 +5,6 @@
         <template v-slot:label>
           <div class="pl-3">
             <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-            <div class="caption grey--text">Work</div>
           </div>
         </template>
       </v-checkbox>
@@ -23,10 +22,10 @@
           <v-chip small class="mr-1">09:30</v-chip>
           <v-chip small>06.05.2020</v-chip>
           <v-spacer></v-spacer>
-          <v-btn icon small color="primary">
+          <v-btn icon small color="primary" @click="$emit('edit')">
             <v-icon>edit</v-icon>
           </v-btn>
-          <v-btn icon small color="primary">
+          <v-btn icon small color="primary" @click="$emit('delete')">
             <v-icon>delete_outline</v-icon>
           </v-btn>
         </v-card-actions>
